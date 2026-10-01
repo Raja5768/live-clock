@@ -81,6 +81,29 @@ https://YOUR-USERNAME.github.io/live-clock/?tz=America%2FChicago&h12=1&mode=digi
 | `smooth` | `0` disables animations | `smooth=0` |
 | `refresh` | Auto-refresh every N hours (`0` = off) | `refresh=24` |
 | `clean` | `1` hides settings gear + hints | `clean=1` |
+| `theme` | Preset theme (below); other params override it | `theme=citynight` |
+| `labelpos` / `datepos` | `above` / `below` time | `labelpos=above` |
+| `datefmt` | `long` ("Wednesday, September 30, 2026") / `short` ("09/30/2026") | `datefmt=short` |
+| `padhour` | 12h leading zero: `1` ("07") / `0` ("7") | `padhour=0` |
+
+### Preset themes
+
+Five one-click styles matching popular 24/7 clock streams — pick one in Settings → "Preset theme", or via `?theme=`:
+
+| Theme | Look |
+|---|---|
+| `minimal` | Black, "Central Time, US" above, 12h `07:09:38 PM`, full date below |
+| `citynight` | Night city skyline, letterspaced label with divider, bold `7:11:24 PM` |
+| `classic24` | Black, `09/30/2026` above, huge 24h `19:09:47`, `CST` below |
+| `midnight` | Deep blue gradient, Orbitron font, logo + LIVE |
+| `fall` | Autumn foliage photo, warm cream text |
+
+Ready-to-use OBS URLs (replace `<you>` with your GitHub username):
+- `https://<you>.github.io/live-clock/?theme=minimal&clean=1`
+- `https://<you>.github.io/live-clock/?theme=citynight&clean=1`
+- `https://<you>.github.io/live-clock/?theme=classic24&clean=1`
+- `https://<you>.github.io/live-clock/?theme=midnight&clean=1`
+- `https://<you>.github.io/live-clock/?theme=fall&clean=1`
 
 ## Reliability notes
 

@@ -71,6 +71,7 @@
 
       <section>
         <h3>Clock</h3>
+        <label>Preset theme <select id="theme"></select></label>
         <label>Timezone <input type="text" id="tzSearch" placeholder="Search timezones…"></label>
         <select id="tzSelect"></select>
         <label>Format
@@ -91,7 +92,30 @@
           <label class="check"><input type="checkbox" id="showDate" checked> Date</label>
           <label class="check"><input type="checkbox" id="showDay" checked> Day</label>
         </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="padHour" checked> Leading zero (07 vs 7)</label>
+        </div>
         <label>Custom timezone label <input type="text" id="tzLabelText" placeholder="Auto from timezone"></label>
+        <div class="row">
+          <label>Label position
+            <select id="labelPos">
+              <option value="below">Below time</option>
+              <option value="above">Above time</option>
+            </select>
+          </label>
+          <label>Date position
+            <select id="datePos">
+              <option value="below">Below time</option>
+              <option value="above">Above time</option>
+            </select>
+          </label>
+        </div>
+        <label>Date format
+          <select id="dateFormat">
+            <option value="long">Wednesday, September 30, 2026</option>
+            <option value="short">09/30/2026</option>
+          </select>
+        </label>
         <label class="check"><input type="checkbox" id="smoothSeconds" checked> Smooth second-hand / digit animation</label>
       </section>
 

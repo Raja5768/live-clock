@@ -51,10 +51,12 @@ body{
 #logoImg{height:5vmin;width:auto;object-fit:contain}
 
 #center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1vmin;min-height:0}
+#digitalWrap{display:flex;flex-direction:column;align-items:center;justify-content:center}
 #time{
   font-size:var(--time-size);font-weight:800;line-height:1;letter-spacing:.01em;
   font-variant-numeric:tabular-nums;text-shadow:0 .6vmin 3vmin rgba(0,0,0,.5);
   display:flex;align-items:baseline;justify-content:center;white-space:nowrap;
+  order:3;
 }
 #time .colon{opacity:.85;margin:0 .4vmin;animation:blink 1s steps(1) infinite}
 @keyframes blink{0%,60%{opacity:.85}61%,100%{opacity:.25}}
@@ -64,6 +66,20 @@ body{
 #ampm{font-size:calc(var(--time-size)*.22);font-weight:700;color:var(--dim-color);margin-left:2vmin;letter-spacing:.2vmin}
 .date-line{font-size:var(--date-size);font-weight:600;color:var(--dim-color);letter-spacing:.12vmin}
 #tzLabel{font-size:calc(var(--date-size)*.62);font-weight:700;letter-spacing:.4vmin;color:var(--text-color);opacity:.75;text-transform:uppercase}
+
+/* ---------- preset theme refinements ---------- */
+/* 1 · Minimal Black — small muted label above the time */
+body[data-theme="minimal"] #tzLabel{text-transform:none;letter-spacing:.03em;font-size:3vmin;color:var(--dim-color);opacity:1;font-weight:500}
+/* 2 · City Night — letterspaced label with thin divider */
+body[data-theme="citynight"] #tzLabel{font-size:2.1vmin;letter-spacing:.55vmin;opacity:.9;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1.4vmin;margin-bottom:1vmin;font-weight:600}
+body[data-theme="citynight"] #time{font-weight:700}
+/* 3 · Classic 24-Hour — gray date above, gray zone code below */
+body[data-theme="classic24"] #dateLine{color:#7d838c}
+body[data-theme="classic24"] #tzLabel{color:#7d838c;opacity:1;font-size:4vmin;letter-spacing:.35vmin;margin-top:2vmin;font-weight:600}
+body[data-theme="classic24"] #time{font-weight:700}
+/* 5 · Fall Nature — warm label above */
+body[data-theme="fall"] #tzLabel{text-transform:none;letter-spacing:.04em;font-size:2.8vmin;opacity:.92;font-weight:600}
+body[data-theme="fall"] #time{text-shadow:0 .6vmin 3.5vmin rgba(0,0,0,.65)}
 
 /* analog */
 #analogWrap{display:flex;flex-direction:column;align-items:center;gap:1.5vmin}

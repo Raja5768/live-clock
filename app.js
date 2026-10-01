@@ -14,6 +14,11 @@ const DEFAULTS = {
   showDate: true,
   showDay: true,
   tzLabel: '',
+  labelPos: 'below',             // above | below  (position of timezone label vs time)
+  datePos: 'below',              // above | below  (position of date line vs time)
+  dateFormat: 'long',            // long = "Wednesday, September 30, 2026" | short = "09/30/2026"
+  padHour: true,                 // 12h: "07" vs "7"
+  theme: 'default',
   clockMode: 'digital',          // digital | analog | both
   extraZones: [],                // [{label, tz}]
   font: 'Inter',
@@ -73,10 +78,74 @@ const CITIES = [
 
 const WMO = {0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Light showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Snow showers',95:'Thunderstorm',96:'Storm + hail',99:'Storm + hail'};
 
+/* ---------------- preset themes (match popular 24/7 clock stream styles) ---------------- */
+const CITY_NIGHT_IMG = 'https://images.pexels.com/photos/6746792/pexels-photo-6746792.jpeg?auto=compress&cs=tinysrgb&w=1920';
+const FALL_NATURE_IMG = 'https://images.pexels.com/photos/34490278/pexels-photo-34490278/free-photo-of-scenic-autumn-road-surrounded-by-vibrant-foliage.jpeg?auto=compress&cs=tinysrgb&w=1920';
+
+const THEMES = {
+  // 1 — minimal black, 12h, label above, long date below (like the reference stream style 1)
+  minimal: {
+    bgType: 'solid', bgColor: '#000000',
+    font: 'Inter', timeSize: 17, dateSize: 3.4,
+    textColor: '#ffffff', accentColor: '#ff453a',
+    hour12: true, padHour: true, showSeconds: true,
+    showDate: true, showDay: true, dateFormat: 'long',
+    labelPos: 'above', datePos: 'below', tzLabel: 'Central Time, US',
+    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false,
+    extraZones: [], weather: false, countdown: false, smoothSeconds: true,
+  },
+  // 2 — night city skyline, letterspaced label with divider, bold 12h (reference style 2)
+  citynight: {
+    bgType: 'image', bgImage: CITY_NIGHT_IMG, bgOverlay: 0.45,
+    font: 'Inter', timeSize: 15, dateSize: 2.9,
+    textColor: '#ffffff', accentColor: '#ff453a',
+    hour12: true, padHour: false, showSeconds: true,
+    showDate: true, showDay: true, dateFormat: 'long',
+    labelPos: 'above', datePos: 'below', tzLabel: 'CENTRAL TIME, US',
+    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false,
+    extraZones: [], weather: false, countdown: false, smoothSeconds: true,
+  },
+  // 3 — black, MM/DD/YYYY above, huge 24h time, zone code below (reference style 3)
+  classic24: {
+    bgType: 'solid', bgColor: '#000000',
+    font: 'Inter', timeSize: 24, dateSize: 5,
+    textColor: '#ffffff', accentColor: '#ff453a',
+    hour12: false, padHour: true, showSeconds: true,
+    showDate: true, showDay: false, dateFormat: 'short',
+    labelPos: 'below', datePos: 'above', tzLabel: 'CST',
+    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false,
+    extraZones: [], weather: false, countdown: false, smoothSeconds: true,
+  },
+  // 4 — deep blue gradient, techy font, 12h (house style)
+  midnight: {
+    bgType: 'gradient', bgGradient: 'ocean', bgOverlay: 0,
+    font: 'Orbitron', timeSize: 20, dateSize: 3.6,
+    textColor: '#eaf2ff', accentColor: '#4da3ff',
+    hour12: true, padHour: true, showSeconds: true,
+    showDate: true, showDay: true, dateFormat: 'long',
+    labelPos: 'below', datePos: 'below', tzLabel: '',
+    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: true, logoText: 'MY CHANNEL',
+    extraZones: [], weather: false, countdown: false, smoothSeconds: true,
+  },
+  // 5 — autumn foliage photo background, warm cream text
+  fall: {
+    bgType: 'image', bgImage: FALL_NATURE_IMG, bgOverlay: 0.35,
+    font: 'Inter', timeSize: 18, dateSize: 3.4,
+    textColor: '#fff8ec', accentColor: '#ffb347',
+    hour12: true, padHour: true, showSeconds: true,
+    showDate: true, showDay: true, dateFormat: 'long',
+    labelPos: 'above', datePos: 'below', tzLabel: 'Central Time, US',
+    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false,
+    extraZones: [], weather: false, countdown: false, smoothSeconds: true,
+  },
+};
+const THEME_NAMES = { default: 'Custom (current settings)', minimal: '1 · Minimal Black', citynight: '2 · City Night', classic24: '3 · Classic 24-Hour', midnight: '4 · Midnight Blue', fall: '5 · Fall Nature' };
+
 /* ---------------- settings load (localStorage < URL params) ---------------- */
 const PARAM_MAP = {
   tz:'tz', h12:'hour12', sec:'showSeconds', date:'showDate', day:'showDay',
   tzlabel:'tzLabel', mode:'clockMode', zones:'extraZones',
+  labelpos:'labelPos', datepos:'datePos', datefmt:'dateFormat', padhour:'padHour', theme:'theme',
   font:'font', tsize:'timeSize', dsize:'dateSize', fg:'textColor', accent:'accentColor',
   bg:'bgType', bgc:'bgColor', bgg:'bgGradient', bgi:'bgImage', bgv:'bgVideo', bgo:'bgOverlay',
   live:'showLive', livetext:'liveText', logo:'showLogo', logotext:'logoText', logoimg:'logoImage',
@@ -84,7 +153,7 @@ const PARAM_MAP = {
   cd:'countdown', cdl:'countdownLabel', cdt:'countdownTarget',
   smooth:'smoothSeconds', refresh:'autoRefreshHours', clean:'clean',
 };
-const BOOL_KEYS = new Set(['hour12','showSeconds','showDate','showDay','showLive','showLogo','weather','countdown','smoothSeconds','clean']);
+const BOOL_KEYS = new Set(['hour12','showSeconds','showDate','showDay','showLive','showLogo','weather','countdown','smoothSeconds','clean','padHour']);
 const NUM_KEYS  = new Set(['timeSize','dateSize','bgOverlay','weatherLat','weatherLon','autoRefreshHours']);
 
 function loadSettings() {
@@ -95,8 +164,12 @@ function loadSettings() {
   } catch (e) { /* corrupted storage -> defaults */ }
 
   const q = new URLSearchParams(location.search);
+  // theme preset first, then individual params override it
+  const themeName = q.get('theme');
+  if (themeName && THEMES[themeName]) s = { ...s, ...THEMES[themeName], theme: themeName };
+  else if (themeName) s.theme = 'default';
   for (const [p, key] of Object.entries(PARAM_MAP)) {
-    if (!q.has(p)) continue;
+    if (!q.has(p) || p === 'theme') continue;
     const v = q.get(p);
     if (key === 'extraZones') {
       s.extraZones = v.split(',').map(x => {
@@ -141,20 +214,17 @@ setInterval(() => {                       // watchdog: reload if the clock stall
 
 /* ---------------- time formatting ---------------- */
 const fmtCache = {};
-function getFmts(tz, hour12) {
-  const key = tz + '|' + hour12;
+function getFmts(tz, hour12, padHour) {
+  const key = tz + '|' + hour12 + '|' + padHour;
   if (!fmtCache[key]) {
-    try {
-      fmtCache[key] = {
-        time: new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12, hourCycle: hour12 ? 'h12' : 'h23' }),
-        date: new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
-      };
-    } catch (e) {                         // bad timezone -> fall back to UTC, never crash
-      fmtCache[key] = {
-        time: new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12, hourCycle: hour12 ? 'h12' : 'h23' }),
-        date: new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
-      };
-    }
+    const hour = padHour ? '2-digit' : 'numeric';
+    const mk = (tzName) => ({
+      time: new Intl.DateTimeFormat('en-US', { timeZone: tzName, hour, minute: '2-digit', second: '2-digit', hour12, hourCycle: hour12 ? 'h12' : 'h23' }),
+      date: new Intl.DateTimeFormat('en-US', { timeZone: tzName, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+      dateShort: new Intl.DateTimeFormat('en-US', { timeZone: tzName, month: '2-digit', day: '2-digit', year: 'numeric' }),
+    });
+    try { fmtCache[key] = mk(tz); }
+    catch (e) { fmtCache[key] = mk('UTC'); }   // bad timezone -> fall back to UTC, never crash
   }
   return fmtCache[key];
 }
@@ -189,7 +259,7 @@ function setText(id, v) {
 }
 
 function renderMain(now) {
-  const f = getFmts(S.tz, S.hour12);
+  const f = getFmts(S.tz, S.hour12, S.padHour);
   const t = partsOf(f.time, now);
   setText('hh', t.hour); setText('mm', t.minute);
   $('ss').style.display = S.showSeconds ? '' : 'none';
@@ -202,17 +272,26 @@ function renderMain(now) {
   }
   setText('ampm', S.hour12 ? (t.dayPeriod || '') : '');
 
-  const d = partsOf(f.date, now);
   let dateStr = '';
-  if (S.showDay && S.showDate) dateStr = `${d.weekday}  •  ${d.month} ${d.day}, ${d.year}`;
-  else if (S.showDay) dateStr = d.weekday;
-  else if (S.showDate) dateStr = `${d.month} ${d.day}, ${d.year}`;
+  if (S.dateFormat === 'short') {
+    dateStr = S.showDate ? f.dateShort.format(now) : '';
+  } else {
+    const d = partsOf(f.date, now);
+    if (S.showDay && S.showDate) dateStr = `${d.weekday}  •  ${d.month} ${d.day}, ${d.year}`;
+    else if (S.showDay) dateStr = d.weekday;
+    else if (S.showDate) dateStr = `${d.month} ${d.day}, ${d.year}`;
+  }
   $('dateLine').style.display = dateStr ? '' : 'none';
   setText('dateLine', dateStr);
 
   const label = S.tzLabel.trim() || cityFromTz(S.tz);
   $('tzLabel').style.display = label ? '' : 'none';
   setText('tzLabel', label);
+
+  // vertical stacking: label / date can sit above or below the time
+  $('time').style.order = 3;
+  $('tzLabel').style.order = S.labelPos === 'above' ? 1 : 4;
+  $('dateLine').style.order = S.datePos === 'above' ? 2 : 5;
 
   document.title = `${t.hour}:${t.minute}${S.showSeconds ? ':' + t.second : ''} ${S.hour12 ? (t.dayPeriod || '') : ''} — Live Clock`;
 }
@@ -221,7 +300,7 @@ function renderZones(now) {
   const box = $('zones');
   if (!S.extraZones.length) { if (last.zonesHtml !== '') { last.zonesHtml = ''; box.innerHTML = ''; } return; }
   const html = S.extraZones.map((z, i) => {
-    const f = getFmts(z.tz, S.hour12);
+    const f = getFmts(z.tz, S.hour12, S.padHour);
     const t = partsOf(f.time, now);
     const time = `${t.hour}:${t.minute}${S.showSeconds ? ':' + t.second : ''}${S.hour12 && t.dayPeriod ? ' ' + t.dayPeriod : ''}`;
     const label = (z.label || cityFromTz(z.tz)).toUpperCase();
@@ -256,7 +335,7 @@ function drawAnalog(now) {
   setHand('secHand', sec * 6);
   setHand('minHand', (m + sec / 60) * 6);
   setHand('hourHand', ((h % 12) + m / 60) * 30);
-  const f = getFmts(S.tz, S.hour12);
+  const f = getFmts(S.tz, S.hour12, S.padHour);
   const d = partsOf(f.date, now);
   setText('analogDate', `${d.weekday}, ${d.month} ${d.day}, ${d.year}`);
 }
@@ -333,14 +412,29 @@ function applyAll() {
   root.setProperty('--overlay', S.bgOverlay);
 
   document.body.style.fontFamily = `'${S.font}', system-ui, sans-serif`;
+  document.body.dataset.theme = S.theme || 'default';
 
-  // background
-  $('bgGradient').style.display = (S.bgType === 'gradient' || S.bgType === 'solid') ? '' : 'none';
-  if (S.bgType === 'solid') $('bgGradient').style.background = S.bgColor;
-  else $('bgGradient').style.background = '';
+  // background (gradient stays behind image as a fallback if the photo fails to load)
+  const grad = $('bgGradient');
+  grad.style.display = S.bgType === 'video' ? 'none' : '';
+  if (S.bgType === 'solid') grad.style.background = S.bgColor;
+  else grad.style.background = '';
   const img = $('bgImage');
-  if (S.bgType === 'image' && S.bgImage) { img.style.display = ''; img.style.backgroundImage = `url("${S.bgImage}")`; }
-  else { img.style.display = 'none'; img.style.backgroundImage = ''; }
+  if (S.bgType === 'image' && S.bgImage) {
+    if (img.dataset.url !== S.bgImage) {
+      img.dataset.url = S.bgImage;
+      img.style.display = 'none';
+      const probe = new Image();
+      probe.onload = () => {
+        if (img.dataset.url === S.bgImage) { img.style.backgroundImage = `url("${S.bgImage}")`; img.style.display = ''; }
+      };
+      probe.onerror = () => {
+        if (img.dataset.url === S.bgImage) { img.style.backgroundImage = ''; img.style.display = 'none'; }
+        console.warn('[live-clock] background image failed to load, using gradient fallback');
+      };
+      probe.src = S.bgImage;
+    }
+  } else { img.dataset.url = ''; img.style.display = 'none'; img.style.backgroundImage = ''; }
   const vid = $('bgVideo');
   if (S.bgType === 'video' && S.bgVideo) {
     vid.style.display = '';
@@ -385,7 +479,14 @@ function fillTzSelect(sel, current, filter) {
     || `<option value="${current}">${current}</option>`;
 }
 
+function applyTheme(name) {
+  S.theme = name;
+  if (THEMES[name]) S = { ...S, ...THEMES[name] };
+  saveSettings(); populateForm(); applyAll();
+}
+
 function populateForm() {
+  $('theme').innerHTML = Object.entries(THEME_NAMES).map(([v, n]) => `<option value="${v}"${v === S.theme ? ' selected' : ''}>${n}</option>`).join('');
   fillTzSelect($('tzSelect'), S.tz);
   fillTzSelect($('zoneTz'), 'America/New_York');
   $('font').innerHTML = FONTS.map(f => `<option${f === S.font ? ' selected' : ''}>${f}</option>`).join('');
@@ -398,6 +499,10 @@ function populateForm() {
   $('showDate').checked = S.showDate;
   $('showDay').checked = S.showDay;
   $('tzLabelText').value = S.tzLabel;
+  $('labelPos').value = S.labelPos;
+  $('datePos').value = S.datePos;
+  $('dateFormat').value = S.dateFormat;
+  $('padHour').checked = S.padHour;
   $('smoothSeconds').checked = S.smoothSeconds;
   $('timeSize').value = S.timeSize; $('timeSizeVal').textContent = S.timeSize + 'vmin';
   $('dateSize').value = S.dateSize; $('dateSizeVal').textContent = S.dateSize + 'vmin';
@@ -433,6 +538,7 @@ function renderZonesList() {
 
 function bindForm() {
   const upd = (fn) => (...a) => { fn(...a); saveSettings(); applyAll(); };
+  $('theme').onchange = (e) => applyTheme(e.target.value);
   $('tzSelect').onchange = upd(e => S.tz = e.target.value);
   $('tzSearch').oninput = (e) => fillTzSelect($('tzSelect'), S.tz, e.target.value);
   $('hour12').onchange = upd(e => S.hour12 = e.target.value === '1');
@@ -441,6 +547,10 @@ function bindForm() {
   $('showDate').onchange = upd(e => S.showDate = e.target.checked);
   $('showDay').onchange = upd(e => S.showDay = e.target.checked);
   $('tzLabelText').oninput = upd(e => S.tzLabel = e.target.value);
+  $('labelPos').onchange = upd(e => S.labelPos = e.target.value);
+  $('datePos').onchange = upd(e => S.datePos = e.target.value);
+  $('dateFormat').onchange = upd(e => S.dateFormat = e.target.value);
+  $('padHour').onchange = upd(e => S.padHour = e.target.checked);
   $('smoothSeconds').onchange = upd(e => S.smoothSeconds = e.target.checked);
   $('timeSize').oninput = upd(e => { S.timeSize = +e.target.value; $('timeSizeVal').textContent = S.timeSize + 'vmin'; });
   $('dateSize').oninput = upd(e => { S.dateSize = +e.target.value; $('dateSizeVal').textContent = S.dateSize + 'vmin'; });
@@ -481,6 +591,7 @@ function bindForm() {
   $('copyObsUrl').onclick = async () => {
     const base = location.href.split('?')[0];
     const p = new URLSearchParams();
+    if (S.theme && S.theme !== 'default') p.set('theme', S.theme);
     p.set('tz', S.tz); p.set('h12', S.hour12 ? '1' : '0'); p.set('mode', S.clockMode);
     if (!S.showSeconds) p.set('sec', '0');
     if (!S.showDate) p.set('date', '0');

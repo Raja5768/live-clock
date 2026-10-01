@@ -426,7 +426,7 @@ function applyAll() {
       img.style.display = 'none';
       const probe = new Image();
       probe.onload = () => {
-        if (img.dataset.url === S.bgImage) { img.style.backgroundImage = `url("${S.bgImage}")`; img.style.display = ''; }
+        if (img.dataset.url === S.bgImage) { img.style.backgroundImage = `url("${S.bgImage}")`; img.style.display = 'block'; }
       };
       probe.onerror = () => {
         if (img.dataset.url === S.bgImage) { img.style.backgroundImage = ''; img.style.display = 'none'; }
@@ -437,7 +437,7 @@ function applyAll() {
   } else { img.dataset.url = ''; img.style.display = 'none'; img.style.backgroundImage = ''; }
   const vid = $('bgVideo');
   if (S.bgType === 'video' && S.bgVideo) {
-    vid.style.display = '';
+    vid.style.display = 'block';
     if (vid.dataset.src !== S.bgVideo) { vid.dataset.src = S.bgVideo; vid.src = S.bgVideo; vid.play().catch(() => {}); }
   } else { vid.style.display = 'none'; vid.removeAttribute('src'); vid.dataset.src = ''; }
 
@@ -491,7 +491,7 @@ function populateForm() {
   fillTzSelect($('tzSelect'), S.tz);
   fillTzSelect($('zoneTz'), 'America/New_York');
   $('font').innerHTML = FONTS.map(f => `<option${f === S.font ? ' selected' : ''}>${f}</option>`).join('');
-  $('bgGradient').innerHTML = Object.keys(GRADIENTS).map(g => `<option value="${g}"${g === S.bgGradient ? ' selected' : ''}>${g[0].toUpperCase() + g.slice(1)}</option>`).join('');
+  $('setBgGradient').innerHTML = Object.keys(GRADIENTS).map(g => `<option value="${g}"${g === S.bgGradient ? ' selected' : ''}>${g[0].toUpperCase() + g.slice(1)}</option>`).join('');
   $('weatherCity').innerHTML = CITIES.map(c => `<option value="${c.name}"${c.name === S.weatherCity ? ' selected' : ''}>${c.name}</option>`).join('') + `<option value="__custom"${!CITIES.some(c => c.name === S.weatherCity) ? ' selected' : ''}>Custom…</option>`;
 
   $('hour12').value = S.hour12 ? '1' : '0';
@@ -511,17 +511,17 @@ function populateForm() {
   $('accentColor').value = S.accentColor;
   $('bgType').value = S.bgType;
   $('bgColor').value = S.bgColor;
-  $('bgImage').value = S.bgImage;
-  $('bgVideo').value = S.bgVideo;
-  $('bgOverlay').value = S.bgOverlay; $('bgOverlayVal').textContent = Math.round(S.bgOverlay * 100) + '%';
+  $('setBgImage').value = S.bgImage;
+  $('setBgVideo').value = S.bgVideo;
+  $('setBgOverlay').value = S.bgOverlay; $('bgOverlayVal').textContent = Math.round(S.bgOverlay * 100) + '%';
   $('showLive').checked = S.showLive;
-  $('liveText').value = S.liveText;
+  $('setLiveText').value = S.liveText;
   $('showLogo').checked = S.showLogo;
-  $('logoText').value = S.logoText;
+  $('setLogoText').value = S.logoText;
   $('logoImage').value = S.logoImage;
-  $('weather').checked = S.weather;
+  $('setWeather').checked = S.weather;
   $('tempUnit').value = S.tempUnit;
-  $('countdown').checked = S.countdown;
+  $('setCountdown').checked = S.countdown;
   $('countdownLabel').value = S.countdownLabel;
   $('countdownTarget').value = S.countdownTarget;
   $('autoRefreshHours').value = S.autoRefreshHours;
@@ -559,23 +559,23 @@ function bindForm() {
   $('accentColor').oninput = upd(e => S.accentColor = e.target.value);
   $('bgType').onchange = upd(e => S.bgType = e.target.value);
   $('bgColor').oninput = upd(e => S.bgColor = e.target.value);
-  $('bgGradient').onchange = upd(e => S.bgGradient = e.target.value);
-  $('bgImage').oninput = upd(e => S.bgImage = e.target.value.trim());
-  $('bgVideo').oninput = upd(e => S.bgVideo = e.target.value.trim());
-  $('bgOverlay').oninput = upd(e => { S.bgOverlay = +e.target.value; $('bgOverlayVal').textContent = Math.round(S.bgOverlay * 100) + '%'; });
+  $('setBgGradient').onchange = upd(e => S.bgGradient = e.target.value);
+  $('setBgImage').oninput = upd(e => S.bgImage = e.target.value.trim());
+  $('setBgVideo').oninput = upd(e => S.bgVideo = e.target.value.trim());
+  $('setBgOverlay').oninput = upd(e => { S.bgOverlay = +e.target.value; $('bgOverlayVal').textContent = Math.round(S.bgOverlay * 100) + '%'; });
   $('showLive').onchange = upd(e => S.showLive = e.target.checked);
-  $('liveText').oninput = upd(e => S.liveText = e.target.value);
+  $('setLiveText').oninput = upd(e => S.liveText = e.target.value);
   $('showLogo').onchange = upd(e => S.showLogo = e.target.checked);
-  $('logoText').oninput = upd(e => S.logoText = e.target.value);
+  $('setLogoText').oninput = upd(e => S.logoText = e.target.value);
   $('logoImage').oninput = upd(e => S.logoImage = e.target.value.trim());
-  $('weather').onchange = upd(e => S.weather = e.target.checked);
+  $('setWeather').onchange = upd(e => S.weather = e.target.checked);
   $('weatherCity').onchange = upd(e => {
     const c = CITIES.find(x => x.name === e.target.value);
     if (c) { S.weatherCity = c.name; S.weatherLat = c.lat; S.weatherLon = c.lon; }
     else { const name = prompt('City name:'); if (name) S.weatherCity = name; }
   });
   $('tempUnit').onchange = upd(e => S.tempUnit = e.target.value);
-  $('countdown').onchange = upd(e => S.countdown = e.target.checked);
+  $('setCountdown').onchange = upd(e => S.countdown = e.target.checked);
   $('countdownLabel').oninput = upd(e => S.countdownLabel = e.target.value);
   $('countdownTarget').onchange = upd(e => S.countdownTarget = e.target.value);
   $('autoRefreshHours').onchange = upd(e => S.autoRefreshHours = Math.max(0, +e.target.value || 0));

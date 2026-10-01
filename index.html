@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&family=Lato:wght@400;700&family=Montserrat:wght@500;700&family=Orbitron:wght@500;700;900&family=Oswald:wght@500;600&family=Playfair+Display:wght@600;800&family=Poppins:wght@500;700&family=Rajdhani:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 
@@ -155,11 +155,11 @@
           </select>
         </label>
         <label>Base color <input type="color" id="bgColor" value="#0a0f1e"></label>
-        <label>Gradient preset <select id="bgGradient"></select></label>
-        <label>Image URL <input type="url" id="bgImage" placeholder="https://…"></label>
-        <label>Video URL <input type="url" id="bgVideo" placeholder="https://… (mp4)"></label>
+        <label>Gradient preset <select id="setBgGradient"></select></label>
+        <label>Image URL <input type="url" id="setBgImage" placeholder="https://…"></label>
+        <label>Video URL <input type="url" id="setBgVideo" placeholder="https://… (mp4)"></label>
         <div class="row2">
-          <label>Dim overlay <input type="range" id="bgOverlay" min="0" max="0.9" step="0.05" value="0.35"><span id="bgOverlayVal"></span></label>
+          <label>Dim overlay <input type="range" id="setBgOverlay" min="0" max="0.9" step="0.05" value="0.35"><span id="bgOverlayVal"></span></label>
         </div>
       </section>
 
@@ -169,14 +169,14 @@
           <label class="check"><input type="checkbox" id="showLive" checked> LIVE badge</label>
           <label class="check"><input type="checkbox" id="showLogo" checked> Logo</label>
         </div>
-        <label>LIVE text <input type="text" id="liveText" value="LIVE"></label>
-        <label>Logo text <input type="text" id="logoText" value="MY CHANNEL"></label>
+        <label>LIVE text <input type="text" id="setLiveText" value="LIVE"></label>
+        <label>Logo text <input type="text" id="setLogoText" value="MY CHANNEL"></label>
         <label>Logo image URL <input type="url" id="logoImage" placeholder="https://… (optional)"></label>
       </section>
 
       <section>
         <h3>Widgets</h3>
-        <label class="check"><input type="checkbox" id="weather"> Weather</label>
+        <label class="check"><input type="checkbox" id="setWeather"> Weather</label>
         <div class="row">
           <select id="weatherCity"></select>
           <select id="tempUnit">
@@ -184,7 +184,7 @@
             <option value="C">°C</option>
           </select>
         </div>
-        <label class="check"><input type="checkbox" id="countdown"> Countdown</label>
+        <label class="check"><input type="checkbox" id="setCountdown"> Countdown</label>
         <label>Countdown label <input type="text" id="countdownLabel" value="New Year"></label>
         <label>Countdown target <input type="datetime-local" id="countdownTarget" value="2027-01-01T00:00"></label>
       </section>
@@ -204,6 +204,6 @@
     </div>
   </aside>
 
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

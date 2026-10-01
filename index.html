@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Live Clock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&family=Lato:wght@400;700&family=Montserrat:wght@500;700&family=Orbitron:wght@500;700;900&family=Oswald:wght@500;600&family=Playfair+Display:wght@600;800&family=Poppins:wght@500;700&family=Rajdhani:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background layers -->
+  <div id="bgGradient" aria-hidden="true"></div>
+  <div id="bgImage" aria-hidden="true"></div>
+  <video id="bgVideo" aria-hidden="true" muted loop playsinline autoplay></video>
+  <div id="bgOverlay" aria-hidden="true"></div>
+
+  <!-- Main stage -->
+  <div id="stage">
+    <header id="topbar">
+      <div id="liveBadge"><span class="live-dot"></span><span id="liveText">LIVE</span></div>
+      <div id="logo"><img id="logoImg" alt="" hidden><span id="logoText">MY CHANNEL</span></div>
+    </header>
+
+    <main id="center">
+      <div id="analogWrap" hidden>
+        <svg id="analog" viewBox="0 0 400 400" aria-label="Analog clock">
+          <circle cx="200" cy="200" r="190" class="face"/>
+          <g id="ticks"></g>
+          <line id="hourHand" x1="200" y1="200" x2="200" y2="110" class="hand hour"/>
+          <line id="minHand" x1="200" y1="200" x2="200" y2="70" class="hand minute"/>
+          <line id="secHand" x1="200" y1="225" x2="200" y2="55" class="hand second"/>
+          <circle cx="200" cy="200" r="10" class="hub"/>
+        </svg>
+        <div id="analogDate" class="date-line"></div>
+      </div>
+
+      <div id="digitalWrap">
+        <div id="time" aria-live="off">
+          <span class="digits" id="hh">--</span><span class="colon">:</span><span class="digits" id="mm">--</span><span class="colon sec-colon">:</span><span class="digits" id="ss">--</span><span id="ampm"></span>
+        </div>
+        <div id="dateLine" class="date-line"></div>
+        <div id="tzLabel"></div>
+      </div>
+
+      <div id="zones"></div>
+    </main>
+
+    <footer id="bottombar">
+      <div id="weather" hidden></div>
+      <div id="countdown" hidden></div>
+    </footer>
+  </div>
+
+  <!-- Settings toggle -->
+  <button id="gear" title="Settings (S)" aria-label="Open settings">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+  <div id="hint" hidden>Press <b>S</b> for settings &nbsp;•&nbsp; <b>F</b> fullscreen &nbsp;•&nbsp; <b>H</b> hide UI</div>
+
+  <!-- Settings panel -->
+  <aside id="settings" hidden>
+    <div class="panel-head">
+      <h2>Clock Settings</h2>
+      <button id="closeSettings" aria-label="Close settings">&times;</button>
+    </div>
+    <div class="panel-body">
+
+      <section>
+        <h3>Clock</h3>
+        <label>Timezone <input type="text" id="tzSearch" placeholder="Search timezones…"></label>
+        <select id="tzSelect"></select>
+        <label>Format
+          <select id="hour12">
+            <option value="1">12-hour (AM/PM)</option>
+            <option value="0">24-hour</option>
+          </select>
+        </label>
+        <label>Display
+          <select id="clockMode">
+            <option value="digital">Digital</option>
+            <option value="analog">Analog</option>
+            <option value="both">Digital + Analog</option>
+          </select>
+        </label>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="showSeconds" checked> Seconds</label>
+          <label class="check"><input type="checkbox" id="showDate" checked> Date</label>
+          <label class="check"><input type="checkbox" id="showDay" checked> Day</label>
+        </div>
+        <label>Custom timezone label <input type="text" id="tzLabelText" placeholder="Auto from timezone"></label>
+        <label class="check"><input type="checkbox" id="smoothSeconds" checked> Smooth second-hand / digit animation</label>
+      </section>
+
+      <section>
+        <h3>Extra timezones</h3>
+        <div id="zonesList"></div>
+        <div class="row">
+          <input type="text" id="zoneLabel" placeholder="Label (e.g. London)">
+          <select id="zoneTz"></select>
+          <button id="addZone" class="btn">Add</button>
+        </div>
+      </section>
+
+      <section>
+        <h3>Appearance</h3>
+        <label>Font <select id="font"></select></label>
+        <div class="row2">
+          <label>Time size <input type="range" id="timeSize" min="8" max="38" step="0.5" value="26"><span id="timeSizeVal"></span></label>
+        </div>
+        <div class="row2">
+          <label>Date size <input type="range" id="dateSize" min="1.5" max="9" step="0.25" value="4.2"><span id="dateSizeVal"></span></label>
+        </div>
+        <div class="row">
+          <label>Text <input type="color" id="textColor" value="#ffffff"></label>
+          <label>Accent <input type="color" id="accentColor" value="#ff453a"></label>
+        </div>
+      </section>
+
+      <section>
+        <h3>Background</h3>
+        <label>Type
+          <select id="bgType">
+            <option value="gradient">Gradient</option>
+            <option value="solid">Solid color</option>
+            <option value="image">Image URL</option>
+            <option value="video">Video URL</option>
+          </select>
+        </label>
+        <label>Base color <input type="color" id="bgColor" value="#0a0f1e"></label>
+        <label>Gradient preset <select id="bgGradient"></select></label>
+        <label>Image URL <input type="url" id="bgImage" placeholder="https://…"></label>
+        <label>Video URL <input type="url" id="bgVideo" placeholder="https://… (mp4)"></label>
+        <div class="row2">
+          <label>Dim overlay <input type="range" id="bgOverlay" min="0" max="0.9" step="0.05" value="0.35"><span id="bgOverlayVal"></span></label>
+        </div>
+      </section>
+
+      <section>
+        <h3>Branding</h3>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="showLive" checked> LIVE badge</label>
+          <label class="check"><input type="checkbox" id="showLogo" checked> Logo</label>
+        </div>
+        <label>LIVE text <input type="text" id="liveText" value="LIVE"></label>
+        <label>Logo text <input type="text" id="logoText" value="MY CHANNEL"></label>
+        <label>Logo image URL <input type="url" id="logoImage" placeholder="https://… (optional)"></label>
+      </section>
+
+      <section>
+        <h3>Widgets</h3>
+        <label class="check"><input type="checkbox" id="weather"> Weather</label>
+        <div class="row">
+          <select id="weatherCity"></select>
+          <select id="tempUnit">
+            <option value="F">°F</option>
+            <option value="C">°C</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="countdown"> Countdown</label>
+        <label>Countdown label <input type="text" id="countdownLabel" value="New Year"></label>
+        <label>Countdown target <input type="datetime-local" id="countdownTarget" value="2027-01-01T00:00"></label>
+      </section>
+
+      <section>
+        <h3>System</h3>
+        <label>Auto-refresh every (hours, 0 = off)
+          <input type="number" id="autoRefreshHours" min="0" max="72" step="1" value="0">
+        </label>
+        <p class="note">The page reloads itself automatically if a script error or a stalled clock is detected. Keep your streaming PC's clock synced to internet time for accuracy.</p>
+      </section>
+
+    </div>
+    <div class="panel-foot">
+      <button id="copyObsUrl" class="btn">Copy OBS URL</button>
+      <button id="resetSettings" class="btn danger">Reset</button>
+    </div>
+  </aside>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -91,7 +91,7 @@ const THEMES = {
     hour12: true, padHour: true, showSeconds: true,
     showDate: true, showDay: true, dateFormat: 'long',
     labelPos: 'above', datePos: 'below', tzLabel: 'Central Time, US',
-    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false,
+    clockMode: 'digital', showLive: false, liveText: 'LIVE', showLogo: false,
     extraZones: [], weather: false, countdown: false, smoothSeconds: true,
   },
   // 2 — night city skyline, letterspaced label with divider, bold 12h (reference style 2)
@@ -102,7 +102,7 @@ const THEMES = {
     hour12: true, padHour: false, showSeconds: true,
     showDate: true, showDay: true, dateFormat: 'long',
     labelPos: 'above', datePos: 'below', tzLabel: 'CENTRAL TIME, US',
-    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false,
+    clockMode: 'digital', showLive: false, liveText: 'LIVE', showLogo: false,
     extraZones: [], weather: false, countdown: false, smoothSeconds: true,
   },
   // 3 — black, MM/DD/YYYY above, huge 24h time, zone code below (reference style 3)
@@ -113,7 +113,7 @@ const THEMES = {
     hour12: false, padHour: true, showSeconds: true,
     showDate: true, showDay: false, dateFormat: 'short',
     labelPos: 'below', datePos: 'above', tzLabel: 'CST',
-    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false,
+    clockMode: 'digital', showLive: false, liveText: 'LIVE', showLogo: false,
     extraZones: [], weather: false, countdown: false, smoothSeconds: true,
   },
   // 4 — deep blue gradient, techy font, 12h (house style)
@@ -459,6 +459,7 @@ function applyAll() {
 
   document.body.classList.toggle('clean', !!S.clean);
   $('hint').hidden = !!S.clean;
+  if (S.clean) $('settings').hidden = true;   // clean stream view: panel can never be open
 
   // force re-render
   last.zonesHtml = null; last.cdHtml = null;

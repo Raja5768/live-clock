@@ -11,6 +11,7 @@
   --overlay: .35;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+[hidden]{display:none!important} /* author display:flex rules must never override the hidden attribute */
 html,body{height:100%;overflow:hidden;background:var(--bg-base)}
 body{
   font-family:var(--font);
@@ -119,6 +120,12 @@ body[data-theme="fall"] #time{text-shadow:0 .6vmin 3.5vmin rgba(0,0,0,.65)}
 body.clean #gear,body.clean #hint{display:none!important}
 #hint{position:fixed;left:50%;bottom:2.4vmin;transform:translateX(-50%);z-index:20;font-size:1.7vmin;color:rgba(255,255,255,.5);letter-spacing:.1vmin}
 body.hideui #gear,body.hideui #hint{opacity:0!important;pointer-events:none}
+
+/* ---------- responsive: portrait phones/tablets (link previews) ---------- */
+@media (max-aspect-ratio: 1/1){
+  :root{ --time-size: 17vmin; --date-size: 4.6vmin; }
+  #settings{ width:min(430px,96vw); }
+}
 
 /* ---------- settings panel ---------- */
 #settings{

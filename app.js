@@ -111,7 +111,7 @@ const THEMES = {
     font: 'Inter', timeSize: 24, dateSize: 5,
     textColor: '#ffffff', accentColor: '#ff453a',
     hour12: false, padHour: true, showSeconds: true,
-    showDate: true, showDay: false, dateFormat: 'short',
+    showDate: true, showDay: true, dateFormat: 'short',
     labelPos: 'below', datePos: 'above', tzLabel: 'CST',
     clockMode: 'digital', showLive: false, liveText: 'LIVE', showLogo: false,
     extraZones: [], weather: false, countdown: false, smoothSeconds: true,
@@ -274,7 +274,9 @@ function renderMain(now) {
 
   let dateStr = '';
   if (S.dateFormat === 'short') {
-    dateStr = S.showDate ? f.dateShort.format(now) : '';
+    const ds = S.showDate ? f.dateShort.format(now) : '';
+    const wd = S.showDay ? partsOf(f.date, now).weekday : '';
+    dateStr = wd && ds ? `${wd}, ${ds}` : (wd || ds);
   } else {
     const d = partsOf(f.date, now);
     if (S.showDay && S.showDate) dateStr = `${d.weekday}  •  ${d.month} ${d.day}, ${d.year}`;

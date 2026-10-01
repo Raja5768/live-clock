@@ -79,7 +79,7 @@ const CITIES = [
 const WMO = {0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Light showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Snow showers',95:'Thunderstorm',96:'Storm + hail',99:'Storm + hail'};
 
 /* ---------------- preset themes (match popular 24/7 clock stream styles) ---------------- */
-const CITY_NIGHT_IMG = 'https://images.pexels.com/photos/6746792/pexels-photo-6746792.jpeg?auto=compress&cs=tinysrgb&w=1920';
+const CITY_NIGHT_IMG = 'https://wallpapers4screen.com/Uploads/4-3-2016/28703/new-york-night-city-skyscrapers-lights-manhattan.jpg';
 const FALL_NATURE_IMG = 'https://images.pexels.com/photos/34490278/pexels-photo-34490278/free-photo-of-scenic-autumn-road-surrounded-by-vibrant-foliage.jpeg?auto=compress&cs=tinysrgb&w=1920';
 
 const THEMES = {
@@ -124,7 +124,7 @@ const THEMES = {
     hour12: true, padHour: true, showSeconds: true,
     showDate: true, showDay: true, dateFormat: 'long',
     labelPos: 'below', datePos: 'below', tzLabel: '',
-    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: true, logoText: 'MY CHANNEL',
+    clockMode: 'digital', showLive: true, liveText: 'LIVE', showLogo: false, logoText: 'MY CHANNEL',
     extraZones: [], weather: false, countdown: false, smoothSeconds: true,
   },
   // 5 — autumn foliage photo background, warm cream text

@@ -105,6 +105,26 @@ Ready-to-use OBS URLs (replace `<you>` with your GitHub username):
 - `https://<you>.github.io/live-clock/?theme=midnight&clean=1`
 - `https://<you>.github.io/live-clock/?theme=fall&clean=1`
 
+## Stream 24/7 from a free cloud server (no laptop needed)
+
+Instead of leaving your own computer on, run the stream on an **Oracle Cloud free-tier VM** ($0 forever: 4 CPUs, 24 GB RAM — plenty for 1080p):
+
+1. Sign up at **oracle.com/cloud/free** (email + phone verification; a card is required for verification only).
+2. Create a Compute instance: **Ubuntu 22.04**, shape **VM.Standard.A1.Flex** with **4 OCPUs / 24 GB RAM** (look for the "Always Free" tag), add your SSH public key.
+3. SSH in and run the installer from this repo:
+   ```bash
+   wget https://raw.githubusercontent.com/YOUR-USERNAME/live-clock/main/vps-install.sh
+   sudo bash vps-install.sh
+   ```
+4. Paste your YouTube stream key into `/etc/clock-stream.env`:
+   ```bash
+   sudo nano /etc/clock-stream.env
+   sudo systemctl restart clock-247
+   ```
+5. Check it's running: `sudo journalctl -u clock-247 -f`
+
+The installer opens your clock page in a virtual display and streams it to YouTube at 1920×1080, 30fps. The systemd service auto-restarts on crash or reboot. To change themes later, edit `CLOCK_URL` in `/etc/clock-stream.env` (any `?theme=…&clean=1` link) and restart the service.
+
 ## Reliability notes
 
 - The page **reloads itself** if a script error occurs or if the clock stalls for more than 15 seconds (backoff + jitter, so it never hot-loops).
